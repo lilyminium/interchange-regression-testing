@@ -18,14 +18,16 @@ def main():
     console = rich.get_console()
     pretty.install(console)
 
-    download_url = (
-        "https://raw.githubusercontent.com/openforcefield/qca-dataset-submission/"
-        "master/submissions/2021-03-30-OpenFF-Industry-Benchmark-Season-1-v1.0/"
-        "dataset.smi"
-    )
-    download_contents = download_file_contents(download_url, "downloading smiles")
+    # download_url = (
+    #     "https://raw.githubusercontent.com/openforcefield/qca-dataset-submission/"
+    #     "master/submissions/2021-03-30-OpenFF-Industry-Benchmark-Season-1-v1.0/"
+    #     "dataset.smi"
+    # )
+    # download_contents = download_file_contents(download_url, "downloading smiles")
 
-    smiles = [pattern for pattern in download_contents.split("\n") if len(pattern) > 0]
+    # smiles = [pattern for pattern in download_contents.split("\n") if len(pattern) > 0]
+    with open("problematic_smiles.smi") as f:
+        smiles = [x.strip() for x in f.readlines()]
 
     topology_definitions = [
         TopologyDefinition(
@@ -43,6 +45,7 @@ def main():
     output_path.parent.mkdir(exist_ok=True, parents=True)
 
     model_to_file(topology_definitions, output_path)
+    print(f"Wrote {len(topology_definitions)} topologies to {output_path}")
 
 
 if __name__ == "__main__":

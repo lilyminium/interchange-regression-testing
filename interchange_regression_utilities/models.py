@@ -93,7 +93,8 @@ class TopologyComponent(CommonModel):
     should be added to a topology.
     """
 
-    smiles: str = Field(..., description="The SMILES representation of the component")
+    smiles: str = Field(...,
+                        description="The SMILES representation of the component")
 
     n_copies: PositiveInt = Field(
         ...,
@@ -124,13 +125,18 @@ class TopologyDefinition(CommonModel):
 
         molecules = [
             (
-                Molecule.from_smiles(component.smiles, allow_undefined_stereo=True),
+                Molecule.from_smiles(
+                    component.smiles, allow_undefined_stereo=True),
                 component.n_copies,
             )
             for component in self.components
         ]
+        for molecule in molecules:
+            molecule[0].assign_partial_charges("am1bccelf10")
+
         topology = Topology.from_molecules(
-            [molecule for molecule, n_copies in molecules for _ in range(n_copies)]
+            [molecule for molecule,
+                n_copies in molecules for _ in range(n_copies)]
         )
 
         if self.is_periodic:
@@ -195,4 +201,5 @@ class Perturbation(CommonModel):
     )
 
     new_value: Any = Field(..., description="The new value")
-    new_units: Optional[str] = Field(None, description="The units of the new value")
+    new_units: Optional[str] = Field(
+        None, description="The units of the new value")
